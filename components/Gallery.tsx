@@ -39,6 +39,8 @@ const GalleryItem: React.FC<{ item: Project }> = ({ item }) => {
               loop
               autoPlay
               playsInline
+              preload="metadata"
+              poster={item.imageUrl} // 使用现有的 imageUrl 作为封面
               className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-700"></div>

@@ -38,7 +38,7 @@ export const GALLERY_ITEMS: Project[] = [
     category: "短片 / Short Film",
     description: "关于水流与时间连续性的实验性捕捉。",
     imageUrl: "https://picsum.photos/id/1015/800/450",
-    videoUrl: "https://github.com/yunyouye28-del/portfolio-video/releases/download/v1.0/river2.mp4"
+    videoUrl: "https://github.com/yunyouye28-del/portfolio-video/releases/download/v1.0/River1.mp4"
   },
   {
     id: "p-dragon-boat",
@@ -46,7 +46,7 @@ export const GALLERY_ITEMS: Project[] = [
     category: "短片 / Short Film",
     description: "传统龙舟叙事的影像化表达。",
     imageUrl: "https://picsum.photos/id/1015/800/450",
-    videoUrl: "https://github.com/yunyouye28-del/portfolio-video/releases/download/v1.0/dragon.boat.mp4"
+    videoUrl: "https://github.com/yunyouye28-del/portfolio-video/releases/download/v1.0/Dragon.Boat1.mp4"
   },
   {
     id: "p-alice",
@@ -54,7 +54,7 @@ export const GALLERY_ITEMS: Project[] = [
     category: "实验影像 / Experimental",
     description: "超现实主义视觉叙事。",
     imageUrl: "https://picsum.photos/id/1049/800/450",
-    videoUrl: "https://github.com/yunyouye28-del/portfolio-video/releases/download/v1.0/what.happened.to.alice.mp4"
+    videoUrl: "https://github.com/yunyouye28-del/portfolio-video/releases/download/v1.0/What.Happened.To.Alice1.mp4"
   },
   {
     id: "p-museum",
@@ -70,7 +70,7 @@ export const GALLERY_ITEMS: Project[] = [
     category: "数字短片 / Digital",
     description: "音频节奏与视觉形态的数字合成。",
     imageUrl: "https://picsum.photos/id/1019/800/450",
-    videoUrl: "https://github.com/yunyouye28-del/portfolio-video/releases/download/v1.0/paya.concerto.mp4"
+    videoUrl: "https://github.com/yunyouye28-del/portfolio-video/releases/download/v1.0/Paya.Concerto1.mp4"
   },
   {
     id: "p-women",
@@ -78,6 +78,6 @@ export const GALLERY_ITEMS: Project[] = [
     category: "短片 / Short Film",
     description: "关于性别、身份与社会观察的主题探讨。",
     imageUrl: "https://picsum.photos/id/1011/800/450",
-    videoUrl: "https://github.com/yunyouye28-del/portfolio-video/releases/download/v1.0/Women.s.Day.mp4"
+    videoUrl: "https://github.com/yunyouye28-del/portfolio-video/releases/download/v1.0/Women.s.Day1.mp4"
   }
 ];

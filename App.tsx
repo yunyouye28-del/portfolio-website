@@ -13,8 +13,6 @@ import { SectionType } from './types';
 const FloatingBackground = () => {
   const [scrollY, setScrollY] = useState(0);
   const baseUrl = "https://raw.githubusercontent.com/yunyouye28-del/portfolio-video/main/";
-  
-  // 仅使用 20-23 号资产，确保视觉统一
   const assets = [
     { src: `${baseUrl}part1-20.png` }, 
     { src: `${baseUrl}part1-21.png` }, 
@@ -24,36 +22,26 @@ const FloatingBackground = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      requestAnimationFrame(() => {
-        setScrollY(window.scrollY);
-      });
+      requestAnimationFrame(() => setScrollY(window.scrollY));
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const elements = useMemo(() => {
-    return Array.from({ length: 12 }).map((_, i) => {
-      const startX = (i * 25) % 100;
-      const startY = (i * 50) % 500;
-      const speed = 0.3 + Math.random() * 0.4; 
-      const driftX = i % 2 === 0 ? 50 : -50; 
-      const driftY = 70; 
-      
-      return {
-        id: i,
-        src: assets[i % assets.length].src,
-        startX,
-        startY,
-        speed,
-        driftX,
-        driftY,
-        size: 350 + Math.random() * 200, 
-        opacity: 0.25 + Math.random() * 0.15,
-        rotation: Math.random() * 360,
-        blur: i % 4 === 0 ? 'blur(12px)' : 'none'
-      };
-    });
+    return Array.from({ length: 12 }).map((_, i) => ({
+      id: i,
+      src: assets[i % assets.length].src,
+      startX: (i * 25) % 100,
+      startY: (i * 50) % 500,
+      speed: 0.3 + Math.random() * 0.4,
+      driftX: i % 2 === 0 ? 50 : -50,
+      driftY: 70,
+      size: 350 + Math.random() * 200,
+      opacity: 0.25 + Math.random() * 0.15,
+      rotation: Math.random() * 360,
+      blur: i % 4 === 0 ? 'blur(12px)' : 'none'
+    }));
   }, []);
 
   return (
@@ -62,23 +50,16 @@ const FloatingBackground = () => {
         const moveX = (scrollY * el.speed * (el.driftX / 100));
         const moveY = (scrollY * el.speed * (el.driftY / 100));
         const rotate = el.rotation + (scrollY * 0.04);
-
         return (
           <img 
-            key={el.id}
-            src={el.src}
+            key={el.id} src={el.src}
             style={{
-              position: 'absolute',
-              top: `${el.startY}vh`,
-              left: `${el.startX}%`,
-              width: `${el.size}px`,
-              opacity: el.opacity,
-              filter: el.blur,
+              position: 'absolute', top: `${el.startY}vh`, left: `${el.startX}%`,
+              width: `${el.size}px`, opacity: el.opacity, filter: el.blur,
               transform: `translate3d(${moveX}px, ${moveY}px, 0) rotate(${rotate}deg)`,
-              transition: 'transform 0.1s linear', 
-              willChange: 'transform'
+              transition: 'transform 0.1s linear', willChange: 'transform'
             }}
-            alt="liquid-metal-element"
+            alt=""
           />
         );
       })}
@@ -89,18 +70,40 @@ const FloatingBackground = () => {
 function App() {
   const [activeSection, setActiveSection] = useState<SectionType>(SectionType.HERO);
   const [expandedPart, setExpandedPart] = useState<string | null>(null);
+  const [pendingScrollSection, setPendingScrollSection] = useState<SectionType | null>(null);
+
+  // 深度修复：监听 expandedPart 的改变，当它展开后，再执行滚动
+  useEffect(() => {
+    if (pendingScrollSection) {
+      // 延迟要稍微给够，给 React 和浏览器重绘布局的时间
+      const timer = setTimeout(() => {
+        const element = document.getElementById(pendingScrollSection);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          setPendingScrollSection(null);
+        }
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [expandedPart, pendingScrollSection]);
 
   const handleNavigate = (section: SectionType) => {
     setActiveSection(section);
+    
+    // 设置展开逻辑
     if (section === SectionType.COMFYUI) setExpandedPart('01');
-    if (section === SectionType.LORA) setExpandedPart('02');
-    if (section === SectionType.SNAKE) setExpandedPart('03');
-    if (section === SectionType.GALLERY) setExpandedPart('04');
-
-    const element = document.getElementById(section);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+    else if (section === SectionType.LORA) setExpandedPart('02');
+    else if (section === SectionType.SNAKE) setExpandedPart('03');
+    else if (section === SectionType.GALLERY) setExpandedPart('04');
+    else {
+      // 如果不是 Part 板块，直接滚动
+      const element = document.getElementById(section);
+      if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
     }
+
+    // 标记需要延迟滚动的目标
+    setPendingScrollSection(section);
   };
 
   const togglePart = (id: string) => {
@@ -122,12 +125,9 @@ function App() {
         <div className="bg-transparent">
           <div id={SectionType.COMFYUI}>
             <ExpandableSection 
-                index="01" 
-                partId="1"
-                subtitle="ComfyUI & Logic"
+                index="01" partId="1" subtitle="ComfyUI & Logic"
                 descriptionText="ComfyUI 风景氛围迁移工作流 —— 打造创意滤镜"
-                isOpen={expandedPart === '01'}
-                onToggle={() => togglePart('01')}
+                isOpen={expandedPart === '01'} onToggle={() => togglePart('01')}
             >
                 {ComfyUISection}
             </ExpandableSection>
@@ -135,12 +135,9 @@ function App() {
 
           <div id={SectionType.LORA}>
             <ExpandableSection 
-                index="02" 
-                partId="2"
-                subtitle="Lora & Aesthetics"
+                index="02" partId="2" subtitle="Lora & Aesthetics"
                 descriptionText="无机质形态美学：FLUX Lora 模型训练实验"
-                isOpen={expandedPart === '02'}
-                onToggle={() => togglePart('02')}
+                isOpen={expandedPart === '02'} onToggle={() => togglePart('02')}
             >
                 {LoraSection}
             </ExpandableSection>
@@ -148,12 +145,9 @@ function App() {
 
           <div id={SectionType.SNAKE}>
             <ExpandableSection 
-                index="03" 
-                partId="3"
-                subtitle="ControlNet & Character"
+                index="03" partId="3" subtitle="ControlNet & Character"
                 descriptionText="灵蛇化形：玄幻电影角色概念控制流设计"
-                isOpen={expandedPart === '03'}
-                onToggle={() => togglePart('03')}
+                isOpen={expandedPart === '03'} onToggle={() => togglePart('03')}
             >
                 {SnakeConceptSection}
             </ExpandableSection>
@@ -161,33 +155,22 @@ function App() {
 
           <div id={SectionType.GALLERY}>
             <ExpandableSection 
-                index="04" 
-                partId="4"
-                subtitle="Intermedia Archive"
+                index="04" partId="4" subtitle="Intermedia Archive"
                 descriptionText="过往影像与装置作品回顾 (跨媒体艺术实践)"
-                isOpen={expandedPart === '04'}
-                onToggle={() => togglePart('04')}
+                isOpen={expandedPart === '04'} onToggle={() => togglePart('04')}
             >
                 {Gallery}
             </ExpandableSection>
           </div>
         </div>
 
-        {/* --- Ending Video Section: Optimized for Clarity & Impact --- */}
         <section className="relative w-full overflow-hidden border-t border-black/[0.03] bg-black">
             <div className="w-full aspect-video md:aspect-[21/9] relative">
                 <video 
-                    src="https://raw.githubusercontent.com/yunyouye28-del/portfolio-video/main/thank%20you.mp4"
-                    autoPlay 
-                    loop 
-                    muted 
-                    playsInline 
+                    src="https://github.com/yunyouye28-del/portfolio-video/releases/download/v1.0/Thank.You1.mp4"
+                    autoPlay loop muted playsInline preload="metadata"
+                    poster="https://raw.githubusercontent.com/yunyouye28-del/portfolio-video/main/part1-04.png"
                     className="w-full h-full object-cover filter contrast-[1.08] brightness-[1.05] saturate-[1.1]"
-                    style={{ 
-                      imageRendering: 'high-quality',
-                      WebkitBackfaceVisibility: 'hidden',
-                      transform: 'translate3d(0, 0, 0)'
-                    }}
                 />
             </div>
         </section>
@@ -201,16 +184,9 @@ function App() {
             <div className="flex flex-col md:flex-row gap-16 text-[11px] font-mono tracking-[0.2em] text-black/40 uppercase">
                 <span className="hover:text-black transition-colors cursor-pointer">+86 19002071207</span>
                 <span className="hover:text-black transition-colors cursor-pointer">GAFA 广州美术学院 科技艺术</span>
-                <span className="hover:text-black transition-colors cursor-pointer">AIGC Specialist</span>
             </div>
         </div>
       </footer>
-
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,900;1,400&display=swap');
-        .font-serif { font-family: 'Playfair Display', serif; }
-        html { scroll-behavior: smooth; }
-      `}</style>
     </div>
   );
 }
