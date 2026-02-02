@@ -37,7 +37,7 @@ export const GALLERY_ITEMS: Project[] = [
     title: "River",
     category: "短片 / Short Film",
     description: "关于水流与时间连续性的实验性捕捉。",
-    imageUrl: "https://picsum.photos/id/1015/800/450",
+    imageUrl: "https://raw.githubusercontent.com/yunyouye28-del/portfolio-video/main/part1-04.png",
     videoUrl: "https://github.com/yunyouye28-del/portfolio-video/releases/download/v1.0/River1.mp4"
   },
   {
@@ -45,7 +45,7 @@ export const GALLERY_ITEMS: Project[] = [
     title: "Dragon Boat",
     category: "短片 / Short Film",
     description: "传统龙舟叙事的影像化表达。",
-    imageUrl: "https://picsum.photos/id/1015/800/450",
+    imageUrl: "https://raw.githubusercontent.com/yunyouye28-del/portfolio-video/main/part1-01.png",
     videoUrl: "https://github.com/yunyouye28-del/portfolio-video/releases/download/v1.0/Dragon.Boat1.mp4"
   },
   {
@@ -53,7 +53,7 @@ export const GALLERY_ITEMS: Project[] = [
     title: "What happened to Alice",
     category: "实验影像 / Experimental",
     description: "超现实主义视觉叙事。",
-    imageUrl: "https://picsum.photos/id/1049/800/450",
+    imageUrl: "https://raw.githubusercontent.com/yunyouye28-del/portfolio-video/main/part1-09.png",
     videoUrl: "https://github.com/yunyouye28-del/portfolio-video/releases/download/v1.0/What.Happened.To.Alice1.mp4"
   },
   {
@@ -61,7 +61,7 @@ export const GALLERY_ITEMS: Project[] = [
     title: "Finding the Art Museum",
     category: "短片 / Short Film",
     description: "一场穿越艺术空间与建筑逻辑的旅程。",
-    imageUrl: "https://picsum.photos/id/1018/800/450",
+    imageUrl: "https://raw.githubusercontent.com/yunyouye28-del/portfolio-video/main/part1-16.png",
     videoUrl: "https://github.com/yunyouye28-del/portfolio-video/releases/download/v1.0/looking.for.art.museum.mp4"
   },
   {
@@ -69,7 +69,7 @@ export const GALLERY_ITEMS: Project[] = [
     title: "Paya Concerto",
     category: "数字短片 / Digital",
     description: "音频节奏与视觉形态的数字合成。",
-    imageUrl: "https://picsum.photos/id/1019/800/450",
+    imageUrl: "https://raw.githubusercontent.com/yunyouye28-del/portfolio-video/main/part1-21.png",
     videoUrl: "https://github.com/yunyouye28-del/portfolio-video/releases/download/v1.0/Paya.Concerto1.mp4"
   },
   {
@@ -77,7 +77,7 @@ export const GALLERY_ITEMS: Project[] = [
     title: "Women's Day",
     category: "短片 / Short Film",
     description: "关于性别、身份与社会观察的主题探讨。",
-    imageUrl: "https://picsum.photos/id/1011/800/450",
+    imageUrl: "https://raw.githubusercontent.com/yunyouye28-del/portfolio-video/main/part1-03.png",
     videoUrl: "https://github.com/yunyouye28-del/portfolio-video/releases/download/v1.0/Women.s.Day1.mp4"
   }
 ];

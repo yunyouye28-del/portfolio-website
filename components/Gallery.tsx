@@ -33,6 +33,7 @@ const GalleryItem: React.FC<{ item: Project }> = ({ item }) => {
         {item.videoUrl ? (
           <div className="relative w-full h-full">
             <video 
+              key={item.videoUrl}
               ref={videoRef}
               src={item.videoUrl}
               muted={isMuted}
@@ -40,7 +41,7 @@ const GalleryItem: React.FC<{ item: Project }> = ({ item }) => {
               autoPlay
               playsInline
               preload="metadata"
-              poster={item.imageUrl} // 使用现有的 imageUrl 作为封面
+              poster={item.imageUrl}
               className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-700"></div>

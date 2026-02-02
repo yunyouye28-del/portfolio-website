@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { AlertCircle, VolumeX, ChevronDown } from 'lucide-react';
+import { AlertCircle, VolumeX } from 'lucide-react';
 import { SectionType } from '../types';
 
 interface HeroProps {
@@ -11,41 +11,37 @@ const VIDEO_SOURCES = [
   "https://github.com/yunyouye28-del/portfolio-video/releases/download/v1.0/hero.mp4"
 ];
 
-// 封面图链接
-const HERO_POSTER = "https://raw.githubusercontent.com/yunyouye28-del/portfolio-video/main/part1-04.png";
-
 export const Hero: React.FC<HeroProps> = ({ onExplore }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoError, setVideoError] = useState<{code: number, message: string} | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [sourceIndex, setSourceIndex] = useState(0);
-  const [hasInteracted, setHasInteracted] = useState(false);
-
-  // 全局交互监听，用于解锁音频
-  useEffect(() => {
-    const unlock = () => {
-      setHasInteracted(true);
-      window.removeEventListener('click', unlock);
-    };
-    window.addEventListener('click', unlock);
-    return () => window.removeEventListener('click', unlock);
-  }, []);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
+    setVideoError(null);
+    setIsLoaded(false);
+
     const handleCanPlay = () => {
       setIsLoaded(true);
-      video.play().catch(() => {});
+      video.muted = isMuted;
+      video.play().catch(err => {
+        console.warn("Autoplay needs interaction:", err);
+      });
     };
 
     const handleError = () => {
       if (sourceIndex < VIDEO_SOURCES.length - 1) {
         setSourceIndex(prev => prev + 1);
       } else {
-        setVideoError({ code: 4, message: "Source error" });
+        setVideoError({
+          code: video.error?.code || 4,
+          message: video.error?.message || "Source error"
+        });
       }
     };
 
@@ -57,30 +53,23 @@ export const Hero: React.FC<HeroProps> = ({ onExplore }) => {
       video.removeEventListener('canplay', handleCanPlay);
       video.removeEventListener('error', handleError);
     };
-  }, [sourceIndex]);
+  }, [sourceIndex, retryCount]);
 
-  // 核心逻辑：鼠标移入移出控制声音
-  const handleMouseEnter = () => {
-    if (videoRef.current && hasInteracted) {
+  const handleUnlockAudio = () => {
+    if (videoRef.current) {
       videoRef.current.muted = false;
       setIsMuted(false);
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = true;
-      setIsMuted(true);
+      videoRef.current.play().catch(console.error);
     }
   };
 
   return (
     <section 
       id={SectionType.HERO} 
-      className="relative h-screen w-full bg-white overflow-hidden flex items-center justify-center"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      className="relative h-screen w-full bg-white overflow-hidden flex items-center justify-center cursor-pointer"
+      onClick={handleUnlockAudio}
     >
+      
       <div className={`absolute inset-0 z-0 transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
         <video 
           ref={videoRef}
@@ -88,8 +77,6 @@ export const Hero: React.FC<HeroProps> = ({ onExplore }) => {
           loop 
           muted={isMuted}
           playsInline
-          preload="auto"
-          poster={HERO_POSTER}
           src={VIDEO_SOURCES[sourceIndex]}
           className="w-full h-full object-cover"
         />
@@ -99,13 +86,14 @@ export const Hero: React.FC<HeroProps> = ({ onExplore }) => {
         <div className="absolute inset-0 z-20 flex items-center justify-center bg-white">
           <div className="text-center">
             <AlertCircle size={40} className="text-black/20 mx-auto mb-4" />
-            <button onClick={() => window.location.reload()} className="text-xs font-bold uppercase tracking-widest border-b border-black">Reload</button>
+            <button onClick={() => { setRetryCount(c => c+1); setSourceIndex(0); }} className="text-xs font-bold uppercase tracking-widest border-b border-black">Reload</button>
           </div>
         </div>
       )}
 
-      {isLoaded && (
+      {(isLoaded || videoError) && (
         <div className="relative z-10 w-full h-full max-w-[1920px] mx-auto pointer-events-none">
+          
           <div className="absolute left-6 top-12 md:left-12">
              <span className="text-[10px] font-mono tracking-[0.5em] text-black/40 uppercase">AIGC Portfolio / v2.0</span>
           </div>
@@ -126,38 +114,22 @@ export const Hero: React.FC<HeroProps> = ({ onExplore }) => {
         </div>
       )}
 
-      {/* 箭头提示 */}
-      {isLoaded && (
-        <div 
-          onClick={onExplore}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 cursor-pointer flex flex-col items-center gap-2 group pointer-events-auto"
-        >
-            <span className="text-[9px] font-mono uppercase tracking-[0.3em] text-black/40 group-hover:text-black transition-colors">Scroll to Discover</span>
-            <div className="animate-bounce-slow">
-              <ChevronDown size={20} className="text-black/30 group-hover:text-black transition-colors" />
-            </div>
-        </div>
-      )}
-
-      {/* 声音交互提示 */}
-      {isLoaded && !hasInteracted && (
-        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20">
-            <div className="px-4 py-2 bg-black/5 backdrop-blur-md border border-black/10 rounded-full animate-pulse">
-                <span className="text-[9px] font-bold uppercase tracking-widest text-black/40">Click anywhere to unlock audio</span>
+      {isLoaded && isMuted && (
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 opacity-30 hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-3 px-6 py-3 border border-black rounded-full backdrop-blur-sm">
+                <VolumeX size={14} />
+                <span className="text-[10px] uppercase tracking-widest font-bold">点击开启声音 / Tap to Unmute</span>
             </div>
         </div>
       )}
 
       <style>{`
-        @keyframes bounce-slow {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(8px); }
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,900;1,400&display=swap');
+        .font-serif {
+          font-family: 'Playfair Display', 'Times New Roman', serif;
         }
-        .animate-bounce-slow {
-          animation: bounce-slow 2s infinite ease-in-out;
-        }
-        .font-serif { font-family: 'Playfair Display', serif; }
       `}</style>
+
     </section>
   );
 };
